@@ -7,11 +7,6 @@ export const Route = createFileRoute('/')({
 
 function Home() {
   return <>
-    <div className=" bg-gray-100 p-8">
-      <h1 className="text-3xl font-bold text-blue-600">
-        Family Planner
-      </h1>
-    </div>
-    <Calendar/>
+    <div>index</div>
   </>
 }

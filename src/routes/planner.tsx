@@ -1,0 +1,53 @@
+import Calendar from '@/pages/calendar/Calendar';
+import type { SchedulerEvent } from '@mui/x-scheduler/models';
+import { createFileRoute } from '@tanstack/react-router'
+
+export const Route = createFileRoute('/planner')({
+  component: Planner,
+})
+
+function Planner() {
+    const resources = [
+  {
+    id: 'fernando',
+    title: 'Fernando',
+  },
+  {
+    id: 'ana',
+    title: 'Ana',
+  },
+  {
+    id: 'juan',
+    title: 'Juan',
+  },
+]
+
+const eventos: SchedulerEvent[] = [
+  {
+    id: 1,
+    title: 'Trabajo',
+    start: '2026-09-14T09:00:00',
+    end: '2026-09-14T12:00:00',
+    resource: 'fernando',
+  },
+  {
+    id: 3,
+    title: 'Tiempo extra',
+    start: '2026-09-14T12:00:00',
+    end: '2026-09-14T15:00:00',
+    resource: 'fernando',
+  },
+  {
+    id: 2,
+    title: 'Escuela',
+    start: '2026-09-14T08:00:00',
+    end: '2026-09-14T14:00:00',
+    resource: 'juan',
+  },
+]
+  return (
+    <div>
+      <Calendar eventos={eventos} resources={resources}/>
+    </div>
+  )
+}

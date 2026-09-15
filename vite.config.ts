@@ -13,4 +13,9 @@ export default defineConfig({
     tailwindcss(),
     react()
   ],
+  resolve: {
+  alias: {
+    '@': import.meta.dirname + '/src',
+  },
+},
 })
