@@ -1,11 +1,12 @@
-import SidebarLayout from '@/components/sidebar/SidebarLayout'
-import { createRootRoute, Outlet } from '@tanstack/react-router'
+import { createRootRouteWithContext, Outlet } from '@tanstack/react-router'
+import type { useAuth } from '@/providers/AuthProvider'
 
-export const Route = createRootRoute({
-  component: () => 
-    <SidebarLayout>
-      <div className='p-5'>
-        <Outlet/>
-      </div>
-    </SidebarLayout>,
+type AuthContext = ReturnType<typeof useAuth>
+
+interface RouterContext {
+  auth: AuthContext
+}
+
+export const Route = createRootRouteWithContext<RouterContext>()({
+  component: () => <Outlet />,
 })

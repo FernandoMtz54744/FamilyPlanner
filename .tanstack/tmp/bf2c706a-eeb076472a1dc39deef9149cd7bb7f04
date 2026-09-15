@@ -2,7 +2,7 @@ import Calendar from '@/pages/calendar/Calendar';
 import type { SchedulerEvent } from '@mui/x-scheduler/models';
 import { createFileRoute } from '@tanstack/react-router'
 
-export const Route = createFileRoute('/planner')({
+export const Route = createFileRoute('/app/planner')({
   component: Planner,
 })
 
