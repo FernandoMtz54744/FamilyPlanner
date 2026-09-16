@@ -15,7 +15,7 @@ export const Route = createFileRoute('/_app')({
 function AppLayout() {
   return (
     <SidebarLayout>
-      <div className='p-5'>
+      <div className='flex flex-1 flex-col p-5'>
         <Outlet />
       </div>
     </SidebarLayout>

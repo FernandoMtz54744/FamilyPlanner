@@ -1,6 +1,7 @@
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar"
 import { useAuth } from "@/providers/AuthProvider"
 import { logout } from "@/services/auth/auth.service";
+import { Link } from "@tanstack/react-router";
 import { Calendar, Contact, LogOut } from 'lucide-react'
 
 const items = [
@@ -45,10 +46,10 @@ export function AppSidebar() {
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton render={
-                    <a href={item.url}>
+                    <Link to={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
-                    </a>
+                    </Link>
                   }>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

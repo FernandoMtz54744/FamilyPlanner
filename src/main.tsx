@@ -4,6 +4,8 @@ import { RouterProvider } from '@tanstack/react-router'
 import { router } from '@/router'
 import './index.css'
 import { AuthProvider, useAuth } from './providers/AuthProvider'
+import { QueryProvider } from './providers/QueryProvider'
+import Loading from './components/spinner/Loading'
 
 
 function AppRouter() {
@@ -13,10 +15,10 @@ function AppRouter() {
     if(!auth.loading) {
       router.invalidate()
     }
-  }, [auth.loading, auth.isAuthenticated])
+  }, [auth.loading])
 
   if (auth.loading) {
-    return <div>Cargando...</div>
+    return <Loading texto="Cargando usuario..."/> 
   }
 
   return (
@@ -27,7 +29,9 @@ function AppRouter() {
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
      <AuthProvider>
-      <AppRouter/>
+      <QueryProvider>
+        <AppRouter/>
+      </QueryProvider>
      </AuthProvider>
   </StrictMode>,
 )
