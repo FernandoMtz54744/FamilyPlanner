@@ -15,7 +15,7 @@ function AppRouter() {
     if(!auth.loading) {
       router.invalidate()
     }
-  }, [auth.loading])
+  }, [auth.loading, auth.isAuthenticated])
 
   if (auth.loading) {
     return <Loading texto="Cargando usuario..."/> 
