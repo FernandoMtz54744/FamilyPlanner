@@ -2,28 +2,18 @@ import type { Horario } from "@/services/schedule.service"
 import type { Usuario } from "@/services/user.service"
 import type { Vacation } from "@/services/vacation.service"
 import type { SchedulerEvent } from "@mui/x-scheduler/models"
-import { addDays, eachDayOfInterval, format, isAfter, isBefore, parseISO, startOfWeek } from 'date-fns'
+import { addDays, format, isAfter, isBefore, parseISO, startOfWeek } from 'date-fns'
 
 export { cn } from "cn"
 
 // Convertir el horario habitual a evento
 export function generateScheduleEvents(users: Usuario[], visibleDate: Date, vacations: Vacation[] = []): SchedulerEvent[] {
-  const dias: (keyof Horario)[] = [
-    'lunes',
-    'martes',
-    'miercoles',
-    'jueves',
-    'viernes',
-    'sabado',
-    'domingo',
-  ]
-
+  const dias: (keyof Horario)[] = ['lunes','martes','miercoles','jueves','viernes','sabado','domingo']
   const inicioSemana = startOfWeek(visibleDate, {
     weekStartsOn: 1,
   })
 
   const events: SchedulerEvent[] = []
-
   users.forEach((user) => {
     if (!user.horario) {
       return
@@ -41,20 +31,16 @@ export function generateScheduleEvents(users: Usuario[], visibleDate: Date, vaca
       }
 
       const fecha = addDays(inicioSemana, index)
-      const fechaString = format(
-        fecha,
-        'yyyy-MM-dd',
-      )
+      const fechaString = format(fecha,'yyyy-MM-dd')
 
-      // Verificar si el usuario está de vacaciones ese día
-      const estaDeVacaciones = vacations.some(
-        (vacation) =>
+      // Se verifica si el usuario está de vacaciones
+      const estaDeVacaciones = vacations.some((vacation) =>
           vacation.userId === user.id &&
           fechaString >= vacation.startDate &&
           fechaString <= vacation.endDate,
       )
 
-      // Si está de vacaciones, no generamos el horario
+      // Si está de vacaciones, no se genera el horario
       if (estaDeVacaciones) {
         return
       }
@@ -73,10 +59,8 @@ export function generateScheduleEvents(users: Usuario[], visibleDate: Date, vaca
   return events
 }
 
-export function generateVacationEvents(
-  vacations: Vacation[],
-  visibleDate: Date,
-): SchedulerEvent[] {
+//Generar las vaciones
+export function generateVacationEvents(vacations: Vacation[], visibleDate: Date): SchedulerEvent[] {
   const inicioSemana = startOfWeek(visibleDate, {
     weekStartsOn: 1,
   })
@@ -87,27 +71,14 @@ export function generateVacationEvents(
     const inicioVacaciones = parseISO(vacation.startDate)
     const finVacaciones = parseISO(vacation.endDate)
 
-    // La vacación no toca esta semana
-    if (
-      isAfter(inicioVacaciones, finSemana) ||
-      isBefore(finVacaciones, inicioSemana)
-    ) {
+    if (isAfter(inicioVacaciones, finSemana) || isBefore(finVacaciones, inicioSemana)) {
       return []
     }
 
-    // Recortamos visualmente al rango de la semana
-    const inicio =
-      inicioVacaciones < inicioSemana
-        ? inicioSemana
-        : inicioVacaciones
-
-    const fin =
-      finVacaciones > finSemana
-        ? finSemana
-        : finVacaciones
-
-    return [
-      {
+    const inicio = inicioVacaciones < inicioSemana ? inicioSemana : inicioVacaciones
+    const fin = finVacaciones > finSemana ? finSemana : finVacaciones
+    
+    return [{
         id: `vacation-${vacation.id}`,
         title: 'Vacaciones',
         start: format(inicio, 'yyyy-MM-dd'),
@@ -115,7 +86,7 @@ export function generateVacationEvents(
         resource: vacation.userId,
         readOnly: true,
         allDay: true,
-      },
+      }
     ]
   })
 }

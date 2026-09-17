@@ -15,11 +15,8 @@ export function useVacations() {
 
   return {
     vacations: vacationsQuery.data ?? [],
-
     isLoading: vacationsQuery.isLoading,
-
     isError: vacationsQuery.isError,
-
     error: vacationsQuery.error,
   };
 }

@@ -57,20 +57,20 @@ function MySchedule() {
     }, [schedule, reset]);
 
     const onSubmit = async (data: HorarioForm) => {
-        try {
-            await saveSchedule(data)
-            console.log('Horario guardado correctamente')
-        } catch (error) {
-          console.error('Error al guardar horario:', error)
-        }
+      try {
+          await saveSchedule(data)
+          console.log('Horario guardado correctamente')
+      } catch (error) {
+        console.error('Error al guardar horario:', error)
+      }
     };
 
     if (isLoading) {
-        return <Loading texto="cargando horario..."/>
+      return <Loading texto="cargando horario..."/>
     }
 
     if (isSaving) {
-        return <Loading texto="Guardando horario..."/>
+      return <Loading texto="Guardando horario..."/>
     }
 
   return (

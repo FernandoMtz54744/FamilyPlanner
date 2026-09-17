@@ -15,28 +15,32 @@ export default function Calendar({ eventos, resources, visibleDate, onVisibleDat
 
   return (
     <div className="w-full h-[85vh]">
-         <EventCalendar events={eventos} resources={resources}
-          preferencesMenuConfig={false}
-          dateLocale={es}
-          visibleDate={visibleDate}
-          onVisibleDateChange={onVisibleDateChange}
-          defaultPreferences={{
-            isSidePanelOpen: false,
-            weekStartsOn: 1,
-            ampm: true,
-          }}
-          defaultView="week"
-          eventCreation={{
-            duration: 60,
-            interaction: 'click',
-          }}
+      <EventCalendar 
+        events={eventos}
+        resources={resources}
+        preferencesMenuConfig={false}
+        dateLocale={es}
+        visibleDate={visibleDate}
+        onVisibleDateChange={onVisibleDateChange}
+        defaultView="week"
+        
+        defaultPreferences={{
+          isSidePanelOpen: false,
+          weekStartsOn: 1,
+          ampm: true,
+        }}
+        
+        eventCreation={{
+          duration: 60,
+          interaction: 'click',
+        }}
 
-          slots={{
-            eventDialogGeneralTab: EventDialogGeneralTab
-          }}
+        slots={{
+          eventDialogGeneralTab: EventDialogGeneralTab
+        }}
 
-          onEventsChange={onEventsChange ?? (() => {})}
-         />
+        onEventsChange={onEventsChange ?? (() => {})}
+      />
     </div>
   )
 }

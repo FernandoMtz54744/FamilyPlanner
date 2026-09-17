@@ -7,7 +7,7 @@ import { Calendar, Contact, LogOut, UserGroup } from 'lucide-react'
 const items = [
   { title: 'Plan Familiar', url: '/planner', icon: UserGroup },
   { title: 'Mi semana', url: '/my-week', icon: Calendar },
-  { title: 'Mis horarios', url: '/my-schedule', icon: Contact },
+  { title: 'Mi horario', url: '/my-schedule', icon: Contact },
 ]
 
 export function AppSidebar() {
@@ -20,7 +20,6 @@ export function AppSidebar() {
 
   return (
     <Sidebar>
-
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>

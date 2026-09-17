@@ -11,7 +11,7 @@ export const Route = createFileRoute('/_app/planner')({
 })
 
 function Planner() {
-  const {family, users, events, vacations, isLoading, isError } = useFamilyPlanner();
+  const { users, events, vacations, isLoading, isError } = useFamilyPlanner();
   const [visibleDate, setVisibleDate] = useState(() => new Date())
   
   const resources = users.map((user) => ({

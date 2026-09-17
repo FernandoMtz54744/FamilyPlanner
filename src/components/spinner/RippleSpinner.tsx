@@ -43,7 +43,7 @@ const RippleSpinner = memo(({
         <motion.div
           key={index}
           className={cn(
-            "absolute inset-0 rounded-full border-current bg-current/[0.03] opacity-0",
+            "absolute inset-0 rounded-full border-current bg-current/3 opacity-0",
             config.borderWidth
           )}
           initial={{ scale: 0.1, opacity: 0 }}
