@@ -13,6 +13,7 @@ import { Route as AppRouteImport } from './routes/_app'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppIndexRouteImport } from './routes/_app/index'
 import { Route as AppMyScheduleRouteImport } from './routes/_app/my-schedule'
+import { Route as AppMyWeekRouteImport } from './routes/_app/my-week'
 import { Route as AppPlannerRouteImport } from './routes/_app/planner'
 
 const AppRoute = AppRouteImport.update({
@@ -34,6 +35,11 @@ const AppMyScheduleRoute = AppMyScheduleRouteImport.update({
   path: '/my-schedule',
   getParentRoute: () => AppRoute,
 } as any)
+const AppMyWeekRoute = AppMyWeekRouteImport.update({
+  id: '/my-week',
+  path: '/my-week',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppPlannerRoute = AppPlannerRouteImport.update({
   id: '/planner',
   path: '/planner',
@@ -44,11 +50,13 @@ export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
   '/login': typeof LoginRoute
   '/my-schedule': typeof AppMyScheduleRoute
+  '/my-week': typeof AppMyWeekRoute
   '/planner': typeof AppPlannerRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/my-schedule': typeof AppMyScheduleRoute
+  '/my-week': typeof AppMyWeekRoute
   '/planner': typeof AppPlannerRoute
   '/': typeof AppIndexRoute
 }
@@ -57,19 +65,21 @@ export interface FileRoutesById {
   '/_app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
   '/_app/my-schedule': typeof AppMyScheduleRoute
+  '/_app/my-week': typeof AppMyWeekRoute
   '/_app/planner': typeof AppPlannerRoute
   '/_app/': typeof AppIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/my-schedule' | '/planner'
+  fullPaths: '/' | '/login' | '/my-schedule' | '/my-week' | '/planner'
   fileRoutesByTo: FileRoutesByTo
-  to: '/login' | '/my-schedule' | '/planner' | '/'
+  to: '/login' | '/my-schedule' | '/my-week' | '/planner' | '/'
   id:
     | '__root__'
     | '/_app'
     | '/login'
     | '/_app/my-schedule'
+    | '/_app/my-week'
     | '/_app/planner'
     | '/_app/'
   fileRoutesById: FileRoutesById
@@ -109,6 +119,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppMyScheduleRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/my-week': {
+      id: '/_app/my-week'
+      path: '/my-week'
+      fullPath: '/my-week'
+      preLoaderRoute: typeof AppMyWeekRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/planner': {
       id: '/_app/planner'
       path: '/planner'
@@ -121,12 +138,14 @@ declare module '@tanstack/react-router' {
 
 interface AppRouteChildren {
   AppMyScheduleRoute: typeof AppMyScheduleRoute
+  AppMyWeekRoute: typeof AppMyWeekRoute
   AppPlannerRoute: typeof AppPlannerRoute
   AppIndexRoute: typeof AppIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
   AppMyScheduleRoute: AppMyScheduleRoute,
+  AppMyWeekRoute: AppMyWeekRoute,
   AppPlannerRoute: AppPlannerRoute,
   AppIndexRoute: AppIndexRoute,
 }

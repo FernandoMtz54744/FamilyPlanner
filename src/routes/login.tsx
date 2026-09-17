@@ -1,4 +1,4 @@
-import { loginWithGoogle } from '@/services/auth/auth.service'
+import { loginWithGoogle } from '@/services/auth.service'
 import { Button } from '@base-ui/react'
 import { createFileRoute, redirect } from '@tanstack/react-router'
 

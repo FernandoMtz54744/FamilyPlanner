@@ -4,7 +4,7 @@ import { Switch } from "@/components/ui/switch";
 import { useSchedule } from "@/hooks/useSchedule";
 import { useAuth } from "@/providers/AuthProvider";
 import { horarioSchema, type HorarioForm } from "@/schemas/schedule.schema";
-import type { Horario } from "@/services/schedule/schedule.service";
+import type { Horario } from "@/services/schedule.service";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
@@ -40,13 +40,15 @@ const defaultValues: Horario = {
 function MySchedule() {
     const usuario = useAuth();
     const userId = usuario.user?.uid;
+    const displayName = usuario.user?.displayName ?? undefined;
+    const photoURL = usuario.user?.photoURL ?? undefined;
 
     const { register, control, handleSubmit, watch, reset,  formState: { errors } } = useForm<HorarioForm>({
         defaultValues,
         resolver: zodResolver(horarioSchema)
     });
 
-    const { schedule, isLoading, isSaving, saveSchedule } = useSchedule(userId);
+    const { schedule, isLoading, isSaving, saveSchedule } = useSchedule(userId, displayName, photoURL);
 
     useEffect(() => {
         if (schedule) {
@@ -59,7 +61,7 @@ function MySchedule() {
             await saveSchedule(data)
             console.log('Horario guardado correctamente')
         } catch (error) {
-        console.error('Error al guardar horario:', error)
+          console.error('Error al guardar horario:', error)
         }
     };
 

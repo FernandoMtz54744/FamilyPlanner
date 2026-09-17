@@ -1,12 +1,13 @@
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar"
 import { useAuth } from "@/providers/AuthProvider"
-import { logout } from "@/services/auth/auth.service";
+import { logout } from "@/services/auth.service";
 import { Link } from "@tanstack/react-router";
-import { Calendar, Contact, LogOut } from 'lucide-react'
+import { Calendar, Contact, LogOut, UserGroup } from 'lucide-react'
 
 const items = [
+  { title: 'Plan Familiar', url: '/planner', icon: UserGroup },
+  { title: 'Mi semana', url: '/my-week', icon: Calendar },
   { title: 'Mis horarios', url: '/my-schedule', icon: Contact },
-  { title: 'Plan Familiar', url: '/planner', icon: Calendar }
 ]
 
 export function AppSidebar() {

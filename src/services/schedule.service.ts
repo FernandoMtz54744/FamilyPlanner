@@ -18,7 +18,7 @@ export type Horario = {
 }
 
 export async function getSchedule(userId: string): Promise<Horario | null> {
-  const userRef = doc(db, 'usuarios', userId)
+  const userRef = doc(db, 'users', userId)
   const snapshot = await getDoc(userRef)
   if (!snapshot.exists()) {
     return null
@@ -28,7 +28,7 @@ export async function getSchedule(userId: string): Promise<Horario | null> {
   return data.horario ?? null
 }
 
-export async function saveSchedule( userId: string, horario: Horario ): Promise<void> {
-  const userRef = doc(db, 'usuarios', userId);
-  await setDoc( userRef, {horario: horario}, {merge: true});
+export async function saveSchedule( userId: string, horario: Horario, displayName: string, photoURL?: string ): Promise<void> {
+  const userRef = doc(db, 'users', userId);
+  await setDoc( userRef, {horario: horario, displayName: displayName, photoURL: photoURL}, {merge: true});
 }
