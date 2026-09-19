@@ -197,7 +197,7 @@ function MyWeek() {
         </h2>
 
         <div className="flex flex-wrap items-end gap-4">
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 w-full sm:w-auto">
             <label htmlFor="vacation-start" className="text-sm font-medium">
               Desde
             </label>
@@ -207,11 +207,11 @@ function MyWeek() {
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
-              className="rounded-md border px-3 py-2 hover:cursor-pointer"
+              className="rounded-md border px-3 py-2 hover:cursor-pointer w-full"
             />
           </div>
 
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 w-full sm:w-auto">
             <label htmlFor="vacation-end" className="text-sm font-medium">
               Hasta
             </label>
@@ -221,7 +221,7 @@ function MyWeek() {
               type="date"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
-              className="rounded-md border px-3 py-2 hover:cursor-pointer"
+              className="rounded-md border px-3 py-2 hover:cursor-pointer w-full"
             />
           </div>
 
@@ -267,29 +267,33 @@ function MyWeek() {
           ) : (
             <div className="flex flex-col gap-2">
               {vacations.map((vacation) => (
-                <div key={vacation.id} className="flex items-center justify-between rounded-md border p-3">
-                  <span className="text-sm">
-                    {format(parseISO(vacation.startDate), "EEEE d 'de' MMMM 'del' yyyy", { locale: es })}
-                    {' → '}
-                    {format(parseISO(vacation.endDate), "EEEE d 'de' MMMM 'del' yyyy", { locale: es })}
+                <div
+                  key={vacation.id}
+                  className="flex flex-col gap-3 rounded-md border p-3 sm:flex-row sm:items-center sm:justify-between"
+                >
+                  <span className="text-sm leading-relaxed">
+                    {format(parseISO(vacation.startDate),"'Del' EEEE d 'de' MMMM 'del' yyyy",{ locale: es })}
+                    {' al '}
+                    {format(parseISO(vacation.endDate),"EEEE d 'de' MMMM 'del' yyyy",{ locale: es })}
                   </span>
 
-                  <div className="flex gap-2">
-                    <button type="button"
+                  <div className="flex gap-2 sm:shrink-0">
+                    <button
+                      type="button"
                       onClick={() => handleEditVacation(vacation)}
                       disabled={deleteVacation.isPending || isSavingVacation}
-                      className="rounded-md border px-3 py-1 text-sm hover:cursor-pointer">
+                      className="flex-1 rounded-md border px-3 py-1 text-sm hover:cursor-pointer sm:flex-none"
+                    >
                       Editar
                     </button>
 
                     <button
                       type="button"
                       onClick={() => deleteVacation.mutate(vacation.id)}
-                      disabled={ deleteVacation.isPending}
-                      className="rounded-md border px-3 py-1 text-sm text-destructive hover:cursor-pointer">
-                      {deleteVacation.isPending
-                        ? 'Eliminando...'
-                        : 'Eliminar'}
+                      disabled={deleteVacation.isPending}
+                      className="flex-1 rounded-md border px-3 py-1 text-sm text-destructive hover:cursor-pointer sm:flex-none"
+                    >
+                      {deleteVacation.isPending ? 'Eliminando...' : 'Eliminar'}
                     </button>
                   </div>
                 </div>
