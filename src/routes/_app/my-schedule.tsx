@@ -9,6 +9,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useUserProfile } from "@/hooks/useUserProfile";
+import type { SchedulerEventColor } from "@mui/x-scheduler/models";
 
 export const Route = createFileRoute("/_app/my-schedule")({
   component: MySchedule,
@@ -37,18 +39,34 @@ const defaultValues: Horario = {
   domingo: {descanso: true, entrada: "",salida: ""},
 };
 
+const colores: {
+  value: SchedulerEventColor
+  className: string
+}[] = [
+  { value: 'red', className: 'bg-red-500' },
+  { value: 'orange', className: 'bg-orange-500' },
+  { value: 'amber', className: 'bg-amber-500' },
+  { value: 'lime', className: 'bg-lime-500' },
+  { value: 'green', className: 'bg-green-500' },
+  { value: 'teal', className: 'bg-teal-500' },
+  { value: 'blue', className: 'bg-blue-500' },
+  { value: 'indigo', className: 'bg-indigo-500' },
+  { value: 'purple', className: 'bg-purple-500' },
+  { value: 'pink', className: 'bg-pink-500' },
+  { value: 'grey', className: 'bg-gray-500' },
+]
+
 function MySchedule() {
     const usuario = useAuth();
     const userId = usuario.user?.uid;
-    const displayName = usuario.user?.displayName ?? undefined;
-    const photoURL = usuario.user?.photoURL ?? undefined;
 
     const { register, control, handleSubmit, watch, reset,  formState: { errors } } = useForm<HorarioForm>({
         defaultValues,
         resolver: zodResolver(horarioSchema)
     });
 
-    const { schedule, isLoading, isSaving, saveSchedule } = useSchedule(userId, displayName, photoURL);
+    const { schedule, isLoading, isSaving, saveSchedule } = useSchedule(userId);
+    const { profile, saveUserInfo, isSavingInfo, isLoading: isLoadingInfo } = useUserProfile();
 
     useEffect(() => {
         if (schedule) {
@@ -65,8 +83,24 @@ function MySchedule() {
       }
     };
 
+  const handleColorChange = async (color: SchedulerEventColor) => {
+    try {
+      await saveUserInfo(color)
+    } catch (error) {
+      console.error('Error al guardar el color:',error);
+    }
+  }
+
     if (isLoading) {
       return <Loading texto="cargando horario..."/>
+    }
+
+    if (isLoadingInfo) {
+      return <Loading texto="cargando información del usuario..."/>
+    }
+
+    if (isSavingInfo) {
+      return <Loading texto="Guardando información del usuario..."/>
     }
 
     if (isSaving) {
@@ -77,28 +111,62 @@ function MySchedule() {
     <div>
       {/* Información del usuario */}
       <div className="rounded-xl border bg-card p-6 shadow-sm">
-        <div className="flex flex-col items-center gap-4 sm:flex-row">
-          <img
-            src={usuario.user?.photoURL ?? ""}
-            alt={usuario.user?.displayName ?? "Usuario"}
-            className="h-20 w-20 rounded-full border-2 border-primary/20 object-cover"
-          />
+      <div className="flex flex-col items-center gap-6 sm:flex-row">
+        <img
+          src={usuario.user?.photoURL ?? ""}
+          alt={usuario.user?.displayName ?? "Usuario"}
+          className="h-20 w-20 rounded-full border-2 border-primary/20 object-cover"
+        />
 
-          <div className="flex flex-col text-center sm:text-left">
-            <h1 className="text-2xl font-semibold tracking-tight">
-              Mi horario
-            </h1>
+        <div className="flex flex-col text-center sm:text-left">
+          <h1 className="text-2xl font-semibold tracking-tight">
+            Mi horario
+          </h1>
 
-            <p className="mt-1 text-lg font-medium">
-              {usuario.user?.displayName}
+          <p className="mt-1 text-lg font-medium">
+            {usuario.user?.displayName}
+          </p>
+
+          <p className="text-sm text-muted-foreground">
+            {usuario.user?.email}
+          </p>
+
+          {/* Selector de color */}
+          <div className="mt-4">
+            <p className="mb-2 text-sm font-medium">
+              Color de mis eventos
             </p>
 
-            <p className="text-sm text-muted-foreground">
-              {usuario.user?.email}
-            </p>
+            <div className="flex flex-wrap justify-center gap-2 sm:justify-start">
+              {colores.map((color) => (
+                <button
+                  key={color.value}
+                  type="button"
+                  aria-label={`Seleccionar color ${color.value}`}
+                  className={`
+                    size-7 rounded-full
+                    hover:cursor-pointer
+                    ${color.className}
+                    transition-all
+                    hover:scale-110
+                    focus:outline-none
+                    focus:ring-2
+                    focus:ring-primary
+                    focus:ring-offset-2
+                    ${
+                      profile?.color === color.value
+                        ? 'scale-110 ring-2 ring-primary ring-offset-2'
+                        : ''
+                    }
+                  `}
+                  onClick={() => handleColorChange(color.value)}
+                />
+              ))}
+            </div>
           </div>
         </div>
       </div>
+    </div>
 
       {/* Horario */}
       <form onSubmit={handleSubmit(onSubmit)}>

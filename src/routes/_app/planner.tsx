@@ -2,7 +2,7 @@ import Loading from '@/components/spinner/Loading';
 import { useFamilyPlanner } from '@/hooks/useFamilyPlanner';
 import { generateScheduleEvents, generateVacationEvents } from '@/lib/utils';
 import Calendar from '@/pages/calendar/Calendar';
-import type { SchedulerEvent } from '@mui/x-scheduler/models';
+import type { SchedulerEvent, SchedulerEventColor } from '@mui/x-scheduler/models';
 import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react';
 
@@ -17,6 +17,7 @@ function Planner() {
   const resources = users.map((user) => ({
     id: user.id,
     title: user.displayName,
+    eventColor: user?.color as SchedulerEventColor
   }))
 
   const eventosReales: SchedulerEvent[] = events.map((event) => ({
@@ -29,7 +30,7 @@ function Planner() {
   }));
 
   const eventosHorario = generateScheduleEvents(users,visibleDate, vacations);
-  const eventosVacaciones = generateVacationEvents(vacations, visibleDate);
+  const eventosVacaciones = generateVacationEvents(users, vacations, visibleDate);
   
   const eventos = [...eventosHorario, ...eventosReales, ...eventosVacaciones,];
 

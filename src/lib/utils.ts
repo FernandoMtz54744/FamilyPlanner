@@ -60,7 +60,7 @@ export function generateScheduleEvents(users: Usuario[], visibleDate: Date, vaca
 }
 
 //Generar las vaciones
-export function generateVacationEvents(vacations: Vacation[], visibleDate: Date): SchedulerEvent[] {
+export function generateVacationEvents(usuarios: Usuario[], vacations: Vacation[], visibleDate: Date,): SchedulerEvent[] {
   const inicioSemana = startOfWeek(visibleDate, {
     weekStartsOn: 1,
   })
@@ -77,8 +77,14 @@ export function generateVacationEvents(vacations: Vacation[], visibleDate: Date)
 
     const inicio = inicioVacaciones < inicioSemana ? inicioSemana : inicioVacaciones
     const fin = finVacaciones > finSemana ? finSemana : finVacaciones
-    
-    return [{
+
+    // Buscar al usuario de estas vacaciones
+    const usuario = usuarios.find(
+      (user) => user.id === vacation.userId,
+    )
+
+    return [
+      {
         id: `vacation-${vacation.id}`,
         title: 'Vacaciones',
         start: format(inicio, 'yyyy-MM-dd'),
@@ -86,7 +92,7 @@ export function generateVacationEvents(vacations: Vacation[], visibleDate: Date)
         resource: vacation.userId,
         readOnly: true,
         allDay: true,
-      }
+      },
     ]
   })
 }

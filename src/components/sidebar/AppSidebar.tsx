@@ -61,7 +61,7 @@ export function AppSidebar() {
 
       <SidebarFooter>
         <SidebarMenuItem>
-          <SidebarMenuButton onClick={handleLogout} tooltip="Cerrar sesión" className="hover:cursor-pointer">
+          <SidebarMenuButton onClick={handleLogout} tooltip="Cerrar sesión" className="hover:cursor-pointer sm:mb-2 md:mb-0">
               <LogOut />
               <span>Cerrar sesión</span>
             </SidebarMenuButton>

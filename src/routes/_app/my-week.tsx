@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
-import type { SchedulerEvent } from '@mui/x-scheduler/models'
+import type { SchedulerEvent, SchedulerEventColor } from '@mui/x-scheduler/models'
 import Loading from '@/components/spinner/Loading'
 import Calendar from '@/pages/calendar/Calendar'
 import { useAuth } from '@/providers/AuthProvider'
@@ -17,8 +17,9 @@ import { useUpdateVacation } from '@/hooks/vacations/useUpdateVacation'
 import { useDeleteVacation } from '@/hooks/vacations/useDeleteVacation'
 
 import type { Vacation } from '@/services/vacation.service'
-import { format } from 'date-fns'
+import { format, parseISO } from 'date-fns'
 import { es } from 'date-fns/locale'
+import { useUserProfile } from '@/hooks/useUserProfile'
 
 export const Route = createFileRoute('/_app/my-week')({
   component: MyWeek,
@@ -28,6 +29,7 @@ function MyWeek() {
   const { user } = useAuth()
   const { schedule, events, isLoading, isError } = useMyWeek()
   const { vacations, isLoading: isVacationsLoading, isError: isVacationsError } = useVacations()
+  const { profile } = useUserProfile();
 
   const createEventMutation = useCreateEvent()
   const deleteEventMutation = useDeleteEvent()
@@ -53,10 +55,11 @@ function MyWeek() {
       id: user.uid,
       displayName: user.displayName ?? 'Yo',
       horario: schedule ?? undefined,
+      color: ''
     }
 
     const eventosHorario = generateScheduleEvents([currentUser], visibleDate, vacations)
-    const eventosVacaciones = generateVacationEvents(vacations, visibleDate)
+    const eventosVacaciones = generateVacationEvents([currentUser], vacations, visibleDate)
 
     const eventosReales: SchedulerEvent[] = events.map((event) => ({
         id: event.id!,
@@ -64,20 +67,17 @@ function MyWeek() {
         start: event.start,
         end: event.end,
         resource: event.userId,
+        color: profile?.color as SchedulerEventColor
       }),
     )
 
     setCalendarEvents([...eventosHorario, ...eventosReales, ...eventosVacaciones,])
-  }, [user, schedule, vacations, visibleDate])
+  }, [user, schedule, vacations, visibleDate, profile?.color])
 
   const handleEventsChange = (newEvents: SchedulerEvent[]) => {
     setCalendarEvents(newEvents)
 
-    const existingEvents = new Map(events.map((event) => [
-        String(event.id),
-        event,
-      ])
-    )
+    const existingEvents = new Map(events.map((event) => [String(event.id), event ]))
 
     // 1. Evento nuevo
     const newEvent = newEvents.find((event) =>
@@ -85,6 +85,7 @@ function MyWeek() {
       !String(event.id).startsWith('schedule-') &&
       !String(event.id).startsWith('vacation-'),
     )
+    console.log({newEvent})
 
     if (newEvent) {
       createEventMutation.mutate({
@@ -203,6 +204,7 @@ function MyWeek() {
   const resources = [{
     id: user.uid,
     title: user.displayName ?? 'Yo',
+    eventColor: profile?.color as SchedulerEventColor
   }]
 
   const isSavingVacation = createVacationMutation.isPending || updateVacationMutation.isPending
@@ -289,9 +291,9 @@ function MyWeek() {
               {vacations.map((vacation) => (
                 <div key={vacation.id} className="flex items-center justify-between rounded-md border p-3">
                   <span className="text-sm">
-                    {format(vacation.startDate, "EEEE d 'de' MMMM 'del' yyyy", { locale: es })}
+                    {format(parseISO(vacation.startDate), "EEEE d 'de' MMMM 'del' yyyy", { locale: es })}
                     {' → '}
-                    {format(vacation.endDate, "EEEE d 'de' MMMM 'del' yyyy", { locale: es })}
+                    {format(parseISO(vacation.endDate), "EEEE d 'de' MMMM 'del' yyyy", { locale: es })}
                   </span>
 
                   <div className="flex gap-2">

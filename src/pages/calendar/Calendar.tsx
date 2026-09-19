@@ -1,4 +1,5 @@
 import EventDialogGeneralTab from '@/components/calendar/EventDialogGeneralTab'
+import { useUserProfile } from '@/hooks/useUserProfile'
 import { EventCalendar } from '@mui/x-scheduler/event-calendar'
 import type { SchedulerEvent, SchedulerResource } from '@mui/x-scheduler/models'
 import { es } from 'date-fns/locale'
@@ -12,6 +13,7 @@ interface Props {
 };
 
 export default function Calendar({ eventos, resources, visibleDate, onVisibleDateChange, onEventsChange }: Props) {
+  const { profile } = useUserProfile();
 
   return (
     <div className="w-full h-[85vh]">
@@ -32,7 +34,7 @@ export default function Calendar({ eventos, resources, visibleDate, onVisibleDat
         
         eventCreation={{
           duration: 60,
-          interaction: 'click',
+          interaction: 'click'
         }}
 
         slots={{

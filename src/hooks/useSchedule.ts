@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { getSchedule, saveSchedule, type Horario } from '@/services/schedule.service'
 
-export function useSchedule(userId?: string, displayName?: string, photoURL?:string) {
+export function useSchedule(userId?: string) {
     const queryClient = useQueryClient()
 
     const scheduleQuery = useQuery({
@@ -12,10 +12,10 @@ export function useSchedule(userId?: string, displayName?: string, photoURL?:str
 
     const saveMutation = useMutation({
         mutationFn: (horario: Horario) => {
-        if (!userId || !displayName) {
+        if (!userId) {
             throw new Error('No hay usuario autenticado')
         }
-      return saveSchedule(userId, horario, displayName, photoURL)
+      return saveSchedule(userId, horario)
     },
 
     onSuccess: (_, horario) => {
