@@ -2,7 +2,7 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupConte
 import { useAuth } from "@/providers/AuthProvider"
 import { logout } from "@/services/auth.service";
 import { Link } from "@tanstack/react-router";
-import { Calendar, Contact, LogOut, UserGroup } from 'lucide-react'
+import { Calendar, CircleUserRound, Contact, LogOut, UserGroup } from 'lucide-react'
 
 const items = [
   { title: 'Plan Familiar', url: '/planner', icon: UserGroup },
@@ -24,7 +24,9 @@ export function AppSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <div className="flex items-center gap-3 px-2 py-2">
-              <img src={user?.photoURL ?? ''} alt={user?.displayName ?? 'Usuario'} className="h-9 w-9 rounded-full"/>
+              {user?.photoURL ? 
+                <img src={user?.photoURL ?? ''} alt={user?.displayName ?? 'Usuario'} className="h-9 w-9 rounded-full"/>
+              : <CircleUserRound size={36}/>}
               <div className="flex min-w-0 flex-1 flex-col">
                 <span className="truncate text-sm font-medium">
                   {user?.displayName}

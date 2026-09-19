@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import type { SchedulerEvent, SchedulerEventColor } from '@mui/x-scheduler/models'
 import Loading from '@/components/spinner/Loading'
@@ -6,20 +6,14 @@ import Calendar from '@/pages/calendar/Calendar'
 import { useAuth } from '@/providers/AuthProvider'
 import { useMyWeek } from '@/hooks/useMyWeek'
 import { generateScheduleEvents, generateVacationEvents} from '@/lib/utils'
-
-import { useCreateEvent } from '@/hooks/events/useCreateEvent'
-import { useDeleteEvent } from '@/hooks/events/useDeleteEvent'
-import { useUpdateEvent } from '@/hooks/events/useUpdateEvent'
-
 import { useVacations } from '@/hooks/vacations/useVacations'
-import { useCreateVacation } from '@/hooks/vacations/useCreateVacation'
-import { useUpdateVacation } from '@/hooks/vacations/useUpdateVacation'
-import { useDeleteVacation } from '@/hooks/vacations/useDeleteVacation'
-
+import { useVacationMutations } from '@/hooks/vacations/useVacationMutations'
 import type { Vacation } from '@/services/vacation.service'
 import { format, parseISO } from 'date-fns'
 import { es } from 'date-fns/locale'
 import { useUserProfile } from '@/hooks/useUserProfile'
+import { useEventMutations } from '@/hooks/useEventMutations'
+import ErrorPage from '@/components/error/ErrorPage'
 
 export const Route = createFileRoute('/_app/my-week')({
   component: MyWeek,
@@ -27,68 +21,57 @@ export const Route = createFileRoute('/_app/my-week')({
 
 function MyWeek() {
   const { user } = useAuth()
-  const { schedule, events, isLoading, isError } = useMyWeek()
-  const { vacations, isLoading: isVacationsLoading, isError: isVacationsError } = useVacations()
+  const { schedule, events, isLoading: isLoadingSchedule, isError: isScheduleError } = useMyWeek()
   const { profile } = useUserProfile();
-
-  const createEventMutation = useCreateEvent()
-  const deleteEventMutation = useDeleteEvent()
-  const updateEventMutation = useUpdateEvent()
-
-  const createVacationMutation = useCreateVacation()
-  const updateVacationMutation = useUpdateVacation()
-  const deleteVacationMutation = useDeleteVacation()
+  
+  const { create: createEvent, update: updateEvent, remove: deleteEvent } = useEventMutations();
+  const { create: createVacation, update: updateVacation, remove: deleteVacation } = useVacationMutations();
+  const { vacations, isLoading: isVacationsLoading, isError: isVacationsError } = useVacations()
 
   const [visibleDate, setVisibleDate] = useState(() => new Date())
-  const [calendarEvents, setCalendarEvents] = useState<SchedulerEvent[]>([])
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
 
   const [editingVacationId, setEditingVacationId] = useState<string | null>(null)
 
-  useEffect(() => {
+  const calendarEvents = useMemo(() => {
     if (!user) {
-      return
+      return []
     }
 
     const currentUser = {
       id: user.uid,
       displayName: user.displayName ?? 'Yo',
       horario: schedule ?? undefined,
-      color: ''
+      color: '',
     }
 
     const eventosHorario = generateScheduleEvents([currentUser], visibleDate, vacations)
-    const eventosVacaciones = generateVacationEvents([currentUser], vacations, visibleDate)
-
+    const eventosVacaciones = generateVacationEvents(vacations, visibleDate)
     const eventosReales: SchedulerEvent[] = events.map((event) => ({
-        id: event.id!,
-        title: event.title,
-        start: event.start,
-        end: event.end,
-        resource: event.userId,
-        color: profile?.color as SchedulerEventColor
-      }),
-    )
+      id: event.id!,
+      title: event.title,
+      start: event.start,
+      end: event.end,
+      resource: event.userId,
+    }))
 
-    setCalendarEvents([...eventosHorario, ...eventosReales, ...eventosVacaciones,])
-  }, [user, schedule, vacations, visibleDate, profile?.color])
+    return [...eventosHorario, ...eventosReales, ...eventosVacaciones]
+  }, [user, schedule, events, vacations, visibleDate])
 
   const handleEventsChange = (newEvents: SchedulerEvent[]) => {
-    setCalendarEvents(newEvents)
-
+    console.log('handleEvent');
+    
     const existingEvents = new Map(events.map((event) => [String(event.id), event ]))
-
-    // 1. Evento nuevo
+    // Evento nuevo
     const newEvent = newEvents.find((event) =>
       !existingEvents.has(String(event.id)) &&
       !String(event.id).startsWith('schedule-') &&
       !String(event.id).startsWith('vacation-'),
     )
-    console.log({newEvent})
 
     if (newEvent) {
-      createEventMutation.mutate({
+      createEvent.mutate({
         title: newEvent.title || 'Tiempo extra',
         start: String(newEvent.start),
         end: String(newEvent.end),
@@ -97,20 +80,15 @@ function MyWeek() {
       return
     }
 
-    // 2. Evento eliminado
+    // Evento eliminado
     const currentIds = new Set(newEvents.map((event) => String(event.id)))
-
-    const deletedEvent = events.find((event) =>
-      event.id &&
-      !currentIds.has(String(event.id)),
-    )
-
+    const deletedEvent = events.find((event) => event.id && !currentIds.has(String(event.id)))
     if (deletedEvent?.id) {
-      deleteEventMutation.mutate(deletedEvent.id)
+      deleteEvent.mutate(deletedEvent.id)
       return
     }
 
-    // 3. Evento editado
+    // Evento editado
     const updatedEvent = newEvents.find((event) => {
       const existingEvent = existingEvents.get(String(event.id))
 
@@ -126,7 +104,7 @@ function MyWeek() {
     })
 
     if (updatedEvent) {
-      updateEventMutation.mutate({
+      updateEvent.mutate({
         eventId: String(updatedEvent.id),
         title: updatedEvent.title || 'Tiempo extra',
         start: String(updatedEvent.start),
@@ -136,16 +114,12 @@ function MyWeek() {
   }
 
   const handleSaveVacation = () => {
-    if (!startDate || !endDate) {
-      return
-    }
-
-    if (startDate > endDate) {
+    if (!startDate || !endDate || startDate > endDate) {
       return
     }
 
     if (editingVacationId) {
-      updateVacationMutation.mutate(
+      updateVacation.mutate(
         {
           vacationId: editingVacationId,
           startDate,
@@ -163,7 +137,7 @@ function MyWeek() {
       return
     }
 
-    createVacationMutation.mutate(
+    createVacation.mutate(
       {
         startDate,
         endDate,
@@ -189,12 +163,16 @@ function MyWeek() {
     setEndDate('')
   }
 
-  if (isLoading || isVacationsLoading) {
+  if (isLoadingSchedule || isVacationsLoading) {
     return <Loading texto="Cargando mi semana" />
   }
 
-  if (isError || isVacationsError) {
-    return <div> Error al cargar tu semana</div>
+  if(createEvent.isPending || updateEvent.isPending){
+    return <Loading texto='Modificando semana'/>
+  }
+
+  if (isScheduleError || isVacationsError) {
+    return <ErrorPage text='Ocurrió un error al cargar la información'/>
   }
 
   if (!user) {
@@ -207,7 +185,7 @@ function MyWeek() {
     eventColor: profile?.color as SchedulerEventColor
   }]
 
-  const isSavingVacation = createVacationMutation.isPending || updateVacationMutation.isPending
+  const isSavingVacation = createVacation.isPending || updateVacation.isPending
 
   return (
     <div className="flex flex-col gap-5">
@@ -299,19 +277,17 @@ function MyWeek() {
                   <div className="flex gap-2">
                     <button type="button"
                       onClick={() => handleEditVacation(vacation)}
-                      disabled={deleteVacationMutation.isPending || isSavingVacation}
+                      disabled={deleteVacation.isPending || isSavingVacation}
                       className="rounded-md border px-3 py-1 text-sm hover:cursor-pointer">
                       Editar
                     </button>
 
                     <button
                       type="button"
-                      onClick={() =>
-                        deleteVacationMutation.mutate(vacation.id)
-                      }
-                      disabled={ deleteVacationMutation.isPending}
+                      onClick={() => deleteVacation.mutate(vacation.id)}
+                      disabled={ deleteVacation.isPending}
                       className="rounded-md border px-3 py-1 text-sm text-destructive hover:cursor-pointer">
-                      {deleteVacationMutation.isPending
+                      {deleteVacation.isPending
                         ? 'Eliminando...'
                         : 'Eliminar'}
                     </button>
@@ -329,6 +305,7 @@ function MyWeek() {
         visibleDate={visibleDate}
         onVisibleDateChange={setVisibleDate}
         onEventsChange={handleEventsChange}
+        readonly = {false}
       />
     </div>
   )

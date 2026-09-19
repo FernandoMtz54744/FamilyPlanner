@@ -15,7 +15,7 @@ export function useUserProfile() {
     enabled: !!userId,
   })
 
-  const colorMutation = useMutation({
+  const userInfoMutation = useMutation({
     mutationFn: (color: SchedulerEventColor) => {
       if (!userId || !user.displayName) {
         throw new Error('No hay usuario autenticado')
@@ -39,7 +39,7 @@ export function useUserProfile() {
   return {
     profile: userQuery.data,
     isLoading: userQuery.isLoading,
-    isSavingInfo: colorMutation.isPending,
-    saveUserInfo: colorMutation.mutateAsync,
+    isSavingInfo: userInfoMutation.isPending,
+    saveUserInfo: userInfoMutation.mutateAsync,
   }
 }

@@ -39,10 +39,7 @@ const defaultValues: Horario = {
   domingo: {descanso: true, entrada: "",salida: ""},
 };
 
-const colores: {
-  value: SchedulerEventColor
-  className: string
-}[] = [
+const colores: { value: SchedulerEventColor, className: string }[] = [
   { value: 'red', className: 'bg-red-500' },
   { value: 'orange', className: 'bg-orange-500' },
   { value: 'amber', className: 'bg-amber-500' },

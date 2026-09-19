@@ -6,12 +6,10 @@ import { addDays, format, isAfter, isBefore, parseISO, startOfWeek } from 'date-
 
 export { cn } from "cn"
 
-// Convertir el horario habitual a evento
+// Convierte el horario habitual de los usuarios a eventos
 export function generateScheduleEvents(users: Usuario[], visibleDate: Date, vacations: Vacation[] = []): SchedulerEvent[] {
   const dias: (keyof Horario)[] = ['lunes','martes','miercoles','jueves','viernes','sabado','domingo']
-  const inicioSemana = startOfWeek(visibleDate, {
-    weekStartsOn: 1,
-  })
+  const inicioSemana = startOfWeek(visibleDate, { weekStartsOn: 1 })
 
   const events: SchedulerEvent[] = []
   users.forEach((user) => {
@@ -60,11 +58,8 @@ export function generateScheduleEvents(users: Usuario[], visibleDate: Date, vaca
 }
 
 //Generar las vaciones
-export function generateVacationEvents(usuarios: Usuario[], vacations: Vacation[], visibleDate: Date,): SchedulerEvent[] {
-  const inicioSemana = startOfWeek(visibleDate, {
-    weekStartsOn: 1,
-  })
-
+export function generateVacationEvents(vacations: Vacation[], visibleDate: Date,): SchedulerEvent[] {
+  const inicioSemana = startOfWeek(visibleDate, { weekStartsOn: 1 })
   const finSemana = addDays(inicioSemana, 6)
 
   return vacations.flatMap((vacation) => {
@@ -78,21 +73,14 @@ export function generateVacationEvents(usuarios: Usuario[], vacations: Vacation[
     const inicio = inicioVacaciones < inicioSemana ? inicioSemana : inicioVacaciones
     const fin = finVacaciones > finSemana ? finSemana : finVacaciones
 
-    // Buscar al usuario de estas vacaciones
-    const usuario = usuarios.find(
-      (user) => user.id === vacation.userId,
-    )
-
-    return [
-      {
-        id: `vacation-${vacation.id}`,
-        title: 'Vacaciones',
-        start: format(inicio, 'yyyy-MM-dd'),
-        end: format(fin, 'yyyy-MM-dd'),
-        resource: vacation.userId,
-        readOnly: true,
-        allDay: true,
-      },
-    ]
+    return [{
+      id: `vacation-${vacation.id}`,
+      title: 'Vacaciones',
+      start: format(inicio, 'yyyy-MM-dd'),
+      end: format(fin, 'yyyy-MM-dd'),
+      resource: vacation.userId,
+      readOnly: true,
+      allDay: true
+    }]
   })
 }

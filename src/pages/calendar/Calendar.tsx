@@ -1,5 +1,4 @@
 import EventDialogGeneralTab from '@/components/calendar/EventDialogGeneralTab'
-import { useUserProfile } from '@/hooks/useUserProfile'
 import { EventCalendar } from '@mui/x-scheduler/event-calendar'
 import type { SchedulerEvent, SchedulerResource } from '@mui/x-scheduler/models'
 import { es } from 'date-fns/locale'
@@ -9,11 +8,11 @@ interface Props {
   resources: SchedulerResource[],
   visibleDate: Date,
   onVisibleDateChange: (date: Date) => void,
-  onEventsChange?: (events: SchedulerEvent[]) => void
+  readonly: boolean,
+  onEventsChange?: (events: SchedulerEvent[]) => void,
 };
 
-export default function Calendar({ eventos, resources, visibleDate, onVisibleDateChange, onEventsChange }: Props) {
-  const { profile } = useUserProfile();
+export default function Calendar({ eventos, resources, visibleDate, onVisibleDateChange, readonly, onEventsChange }: Props) {
 
   return (
     <div className="w-full h-[85vh]">
@@ -25,6 +24,12 @@ export default function Calendar({ eventos, resources, visibleDate, onVisibleDat
         visibleDate={visibleDate}
         onVisibleDateChange={onVisibleDateChange}
         defaultView="week"
+        readOnly={readonly}
+        
+        viewConfig={{
+          week:{ initialScrollTime: 7 },
+          day:{ initialScrollTime: 7 }
+        }}
         
         defaultPreferences={{
           isSidePanelOpen: false,

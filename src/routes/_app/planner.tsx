@@ -30,7 +30,7 @@ function Planner() {
   }));
 
   const eventosHorario = generateScheduleEvents(users,visibleDate, vacations);
-  const eventosVacaciones = generateVacationEvents(users, vacations, visibleDate);
+  const eventosVacaciones = generateVacationEvents(vacations, visibleDate);
   
   const eventos = [...eventosHorario, ...eventosReales, ...eventosVacaciones,];
 
@@ -46,6 +46,12 @@ function Planner() {
 
 
   return (
-    <Calendar eventos={eventos} resources={resources} visibleDate={visibleDate} onVisibleDateChange={setVisibleDate}/>
+    <Calendar 
+      eventos={eventos} 
+      resources={resources}
+      visibleDate={visibleDate} 
+      onVisibleDateChange={setVisibleDate}
+      readonly={true}
+      />
   )
 }
