@@ -45,7 +45,8 @@ export function generateScheduleEvents(users: Usuario[], visibleDate: Date, vaca
 
       events.push({
         id: `schedule-${user.id}-${fechaString}`,
-        title: `${user.displayName} trabajo`,
+        title: "",
+        description: `${user.displayName} - Trabajo`,
         start: `${fechaString}T${horario.entrada}:00`,
         end: `${fechaString}T${horario.salida}:00`,
         resource: user.id,

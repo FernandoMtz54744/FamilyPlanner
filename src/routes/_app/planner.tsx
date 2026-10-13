@@ -22,8 +22,9 @@ function Planner() {
 
   const eventosReales: SchedulerEvent[] = events.map((event) => ({
     id: event.id!,
-    title: event.title,
+    title: '',
     start: event.start,
+    description: event.title,
     end: event.end,
     resource: event.userId,
     readOnly: true
@@ -50,6 +51,7 @@ function Planner() {
       eventos={eventos} 
       resources={resources}
       visibleDate={visibleDate} 
+      usuarios={users}
       onVisibleDateChange={setVisibleDate}
       readonly={true}
       />
